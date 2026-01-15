@@ -20,14 +20,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        // 参加者リストHTML生成（削除アイコン付き、liの箇条書き非表示）
+        let participantsHtml = `<div class="participants-section">
+          <h5>参加者</h5>
+          <ul class="participants-list">
+            ${details.participants.length === 0
+              ? '<li>まだ参加者はいません</li>'
+              : details.participants.map(p => `
+                  <li class="participant-item">
+                    <span class="participant-email">${p}</span>
+                    <span class="delete-participant" title="この参加者を削除" data-activity="${name}" data-email="${p}">&#128465;</span>
+                  </li>
+                `).join('')}
+          </ul>
+        </div>`;
+
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          ${participantsHtml}
         `;
 
         activitiesList.appendChild(activityCard);
+
+        // 削除アイコンのクリックイベントを追加
+        activityCard.querySelectorAll('.delete-participant').forEach(icon => {
+          icon.addEventListener('click', async (e) => {
+            const activity = icon.getAttribute('data-activity');
+            const email = icon.getAttribute('data-email');
+            if (!confirm(`${email} を ${activity} から削除しますか？`)) return;
+            try {
+              const res = await fetch(`/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(email)}`, {
+                method: 'DELETE',
+              });
+              const result = await res.json();
+              if (res.ok) {
+                fetchActivities();
+              } else {
+                alert(result.detail || '削除に失敗しました');
+              }
+            } catch (err) {
+              alert('削除リクエストに失敗しました');
+            }
+          });
+        });
 
         // Add option to select dropdown
         const option = document.createElement("option");
@@ -62,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        fetchActivities(); // 参加者リストを即時更新
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";

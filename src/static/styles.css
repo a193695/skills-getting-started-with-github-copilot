@@ -142,3 +142,49 @@ footer {
   padding: 20px;
   color: #666;
 }
+
+.participants-section {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.participants-section h5 {
+  margin-bottom: 6px;
+  font-size: 15px;
+  color: #3949ab;
+  font-weight: bold;
+}
+
+
+/* 参加者リストの箇条書き記号を非表示に */
+.participants-list {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-left: 0;
+  list-style: none;
+  color: #333;
+  font-size: 15px;
+}
+
+/* 参加者liの横並び・削除アイコン */
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+.delete-participant {
+  color: #e53935;
+  cursor: pointer;
+  margin-left: 4px;
+  font-size: 1.1em;
+  transition: color 0.2s;
+}
+.delete-participant:hover {
+  color: #b71c1c;
+}
+
+.participants-list li {
+  margin-bottom: 3px;
+}
